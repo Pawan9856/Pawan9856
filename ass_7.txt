@@ -1,0 +1,110 @@
+(1) select name from  rating inner join reviewer on rating.rID= reviewer.rID where stars in (select stars from rating inner join reviewer on rating.rID= reviewer.rID where name= "Mike Anderson" );
++------------------+
+| name             |
++------------------+
+| Mike Anderson    |
+| Chris Jackson    |
+| Elizabeth Thomas |
+| Ashley White     |
++------------------+
+
+(2) select distinct name from rating inner join reviewer on reviewer.rID= rating.rId where mID in ( select mID from rating inner join reviewer on reviewer.rID= rating.rId where name= "Brittany Harris") and name != "Brittany Harris";
++---------------+
+| name          |
++---------------+
+| Chris Jackson |
++---------------+
+
+(3) select title from movie where mID not in (select movie.mID from movie inner join rating on rating.mID= movie.mID inner join reviewer on reviewer.rID= rating.rID where name= "Chris Jackson");
++--------------------+
+| title              |
++--------------------+
+| Gone with the Wind |
+| Star Wars          |
+| Titanic            |
+| Snow White         |
+| Avatar             |
++--------------------+
+
+(4) select * from movie where mID not in (select mID from rating where rID = 203) and mID in (select mID from rating where rID = 205);
++------+-------+------+------------------+
+| mID  | title | year | director         |
++------+-------+------+------------------+
+|  104 | E.T.  | 1982 | Steven Spielberg |
++------+-------+------+------------------+
+
+(5) select director from movie group by director having count(mID)>1;
++------------------+
+| director         |
++------------------+
+| Steven Spielberg |
+| James Cameron    |
++------------------+
+
+(6) select title,count(rID) from movie inner join rating on rating.mID= movie.mID group by rating.mID ;
++-------------------------+------------+
+| title                   | count(rID) |
++-------------------------+------------+
+| Gone with the Wind      |          3 |
+| Snow White              |          2 |
+| The Sound of Music      |          2 |
+| Raiders of the Lost Ark |          3 |
+| E.T.                    |          2 |
+| Avatar                  |          2 |
++-------------------------+------------+
+
+(7) select stars,count(mID) from rating where stars= 5 or stars= 4 group by stars;
++-------+------------+
+| stars | count(mID) |
++-------+------------+
+|     4 |          4 |
+|     5 |          2 |
++-------+------------+
+
+(8) select title , max(stars) from movie inner join rating on rating.mID= movie.mID  group by movie.mID;
++-------------------------+------------+
+| title                   | max(stars) |
++-------------------------+------------+
+| Gone with the Wind      |          4 |
+| Snow White              |          5 |
+| The Sound of Music      |          3 |
+| Raiders of the Lost Ark |          4 |
+| E.T.                    |          3 |
+| Avatar                  |          5 |
++-------------------------+------------+
+
+(9) select title , max(stars)-min(stars) as spread from movie inner join rating on rating.mID= movie.mID  group by movie.mID;
++-------------------------+--------+
+| title                   | spread |
++-------------------------+--------+
+| Gone with the Wind      |      2 |
+| Snow White              |      1 |
+| The Sound of Music      |      1 |
+| Raiders of the Lost Ark |      2 |
+| E.T.                    |      1 |
+| Avatar                  |      2 |
++-------------------------+--------+
+
+(10) select distinct title from movie inner join rating on rating.mID= movie.mID where movie.mID in (select mID from rating where stars in(select max(stars) from rating ));
++------------+
+| title      |
++------------+
+| Snow White |
+| Avatar     |
++------------+
+
+(11) select distinct title from movie  where mID in (select mID from rating where stars > (select max(stars) from rating where rID = 205));
++------------+
+| title      |
++------------+
+| Snow White |
+| Avatar     |
++------------+
+
+(12) select mID , title from movie where mID in (select mID from rating group by mID having count(rID) = (select count(rID) from rating group by mID order by count(rID) desc limit 1) );
++------+-------------------------+
+| mID  | title                   |
++------+-------------------------+
+|  101 | Gone with the Wind      |
+|  108 | Raiders of the Lost Ark |
++------+-------------------------+

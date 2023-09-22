@@ -1,0 +1,33 @@
+(1)
+ mysql> delimiter //
+ mysql> create trigger duplicate_records after insert on t1 for each row begin insert into t2 values(new.id,new.name);  insert into t2 values(new.id,new.name); end// 
+ mysql> delimiter ;  
+
+select * from t1;
++----+-------+
+| id | name  |
++----+-------+
+|  1 | pawan |
++----+-------+
+ select * from t2;
++------+-------+
+| id   | name  |
++------+-------+
+|    1 | pawan |
+|    1 | pawan |
++------+-------+
+
+(2)
+  create trigger ON_DELETE_CASCADE after delete on t2 for each row delete from t2 where t2.id= old.id ;
+
+(3) create trigger insert_log after insert on t1 for each row insert into log
+ values(new.id, new.name, 'insert');
+ 
+ create trigger delete_log after delete on t1 for each row insert into log
+ values(old.id, old.name, 'delete');
+
+create trigger update_log after update on t1 for each row insert into log
+ values(new.id, new.name, 'update');
+ 
+ create trigger oupdate_log after update on t1 for each row insert into log
+ values(old.id, old.name, 'oupdate');
